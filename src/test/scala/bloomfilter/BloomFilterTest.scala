@@ -28,4 +28,14 @@ class BloomFilterSpec extends FlatSpec {
       val falsePositiveCount = otherWords.map(word => if (filter.checkMaybeExists(word)) 1 else 0).sum
       assert(falsePositiveCount <= 10)
     }
+
+    it should "add and check words for any positive hash length" in {
+      val words = (0 until 10000).map(_.toString)
+      (1 until 16).foreach(numBitsPerHash => {
+        val filter = new BloomFilter(numBitsPerHash, 1)
+        words.foreach(word => filter.add(word))
+        val allWordsInFilter: Boolean = words.map(word => filter.checkMaybeExists(word)).forall(exists => exists)
+        assert(allWordsInFilter)
+      })
+    }
 }

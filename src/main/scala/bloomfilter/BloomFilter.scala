@@ -11,8 +11,12 @@ import scala.util.hashing.MurmurHash3
 // at the cost of additional memory.
 class BloomFilter(numBitsPerHash: Int, numHashes: Int) {
 
+  assert(numHashes > 0, "Num hashes must be greater than zero")
+  assert(numBitsPerHash > 0, "Num bits per hash must be greater than zero")
+
   // Store all bits in a single flat byte array
-  private val bitMap: Array[Byte] = new Array(numHashes * numBitsPerHash / 8)
+  private val numBytesInBitMap = Math.ceil(numHashes * numBitsPerHash / 8.0).toInt
+  private val bitMap: Array[Byte] = new Array(numBytesInBitMap)
 
   // Generate a random seed for each hash function
   private val hashSeeds: Array[Int] = (0 until numHashes).map(_ => Random.nextInt()).toArray
